@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300">
+  <rect width="900" height="300" rx="16" fill="#05080d"/>
+  <rect x="1" y="1" width="898" height="298" rx="16" fill="none" stroke="#30363d"/>
+
+  <circle cx="25" cy="24" r="6" fill="#ff5f56"/>
+  <circle cx="47" cy="24" r="6" fill="#ffbd2e"/>
+  <circle cx="69" cy="24" r="6" fill="#27c93f"/>
+
+  <text x="100" y="29" fill="#8b949e"
+        font-family="monospace" font-size="14">
+    aexorr@github:~$ ./system_check.sh
+  </text>
+
+  <line x1="0" y1="50" x2="900" y2="50" stroke="#30363d"/>
+
+  <rect x="0" y="52" width="900" height="2"
+        fill="#58a6ff" opacity="0.12">
+    <animate attributeName="y"
+             from="52"
+             to="298"
+             dur="3s"
+             repeatCount="indefinite"/>
+  </rect>
+
+  <g font-family="monospace" font-size="15">
+
+    <text x="35" y="85" fill="#58a6ff">
+      [ SYSTEM INITIALIZED ]
+    </text>
+
+    <text x="35" y="115" fill="#8b949e">
+      identity:
+    </text>
+
+    <text x="145" y="115" fill="#c9d1d9">
+      aexorr
+    </text>
+
+    <text x="35" y="140" fill="#8b949e">
+      status:
+    </text>
+
+    <text x="145" y="140" fill="#3fb950">
+      ONLINE
+    </text>
+
+    <text x="35" y="165" fill="#8b949e">
+      mode:
+    </text>
+
+    <text x="145" y="165" fill="#f0883e">
+      BUILD / EXPERIMENT
+    </text>
+
+    <text x="35" y="190" fill="#8b949e">
+      access:
+    </text>
+
+    <text x="145" y="190" fill="#3fb950">
+      GRANTED
+    </text>
+
+    <text x="35" y="215" fill="#8b949e">
+      system:
+    </text>
+
+    <text x="145" y="215" fill="#c9d1d9">
+      WEB • AI • AUTOMATION
+    </text>
+
+    <text x="35" y="250" fill="#58a6ff">
+      aexorr@github:~$
+    </text>
+
+    <text x="185" y="250" fill="#c9d1d9">
+      keep_building
+      <animate attributeName="opacity"
+               values="1;0;1"
+               dur="1s"
+               repeatCount="indefinite"/>
+    </text>
+
+  </g>
+
+  <rect x="600" y="105" width="240" height="14"
+        rx="3"
+        fill="#161b22"
+        stroke="#30363d"/>
+
+  <rect x="602" y="107" width="180" height="10"
+        rx="2"
+        fill="#58a6ff">
+    <animate attributeName="width"
+             values="30;210;30"
+             dur="2.5s"
+             repeatCount="indefinite"/>
+  </rect>
+
+  <text x="600" y="145"
+        fill="#8b949e"
+        font-family="monospace"
+        font-size="12">
+    system integrity
+  </text>
+
+</svg>
