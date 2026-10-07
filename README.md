@@ -8,6 +8,12 @@
 
 <br/>
 
+<div align="center">
+  <img src="./hacker-console.svg" width="100%" alt="Aexorr hacker terminal">
+</div>
+
+<br/>
+
 ```text
 ┌──────────────────────────────────────────────────────────────────────┐
 │                                                                      │
