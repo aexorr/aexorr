@@ -1,412 +1,394 @@
 from pathlib import Path
+import base64
 import html
 
-from PIL import Image, ImageOps
+from PIL import Image, ImageEnhance, ImageOps
 
-
-# ============================================================
-# AEXORR // CYBER TERMINAL PORTRAIT
-# ============================================================
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 
-INPUT = ROOT / "source-prepped.png"
+SOURCE = ROOT / "source-photo.png"
 OUTPUT = ROOT / "avi-ascii.svg"
 
+WIDTH = 1000
+HEIGHT = 620
 
-# Compact size — page ko huge nahi banayega
-COLS = 78
-ROWS = 42
 
-# ASCII ramp
-RAMP = " .:-=+*#%@"
+# -------------------------
+# Prepare normal photo
+# -------------------------
 
-# Terminal dimensions
-CELL_W = 9
-CELL_H = 13
+img = Image.open(SOURCE).convert("RGB")
 
-WIDTH = 760
-HEIGHT = 650
+# Keep the real photo — no ASCII conversion.
+img.thumbnail((760, 470), Image.Resampling.LANCZOS)
 
+# Slight contrast boost
+img = ImageEnhance.Contrast(img).enhance(1.08)
 
-def brightness_to_char(value):
-    index = int(
-        (value / 255)
-        * (len(RAMP) - 1)
-    )
+# Darken slightly for cyber-terminal look
+img = ImageEnhance.Brightness(img).enhance(0.88)
 
-    return RAMP[index]
+# Put photo inside a fixed canvas
+canvas = Image.new("RGB", (760, 470), (8, 12, 18))
 
+x = (760 - img.width) // 2
+y = (470 - img.height) // 2
 
-def load_image():
+canvas.paste(img, (x, y))
 
-    image = Image.open(INPUT).convert("L")
+# Encode image inside SVG
+temp = ROOT / "_profile_temp.png"
+canvas.save(temp, "PNG")
+
+data = base64.b64encode(
+    temp.read_bytes()
+).decode("ascii")
+
+temp.unlink(missing_ok=True)
+
+
+# -------------------------
+# SVG
+# -------------------------
+
+svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
+xmlns:xlink="http://www.w3.org/1999/xlink"
+width="{WIDTH}"
+height="{HEIGHT}"
+viewBox="0 0 {WIDTH} {HEIGHT}">
+
+<defs>
+
+    <clipPath id="photoClip">
+        <rect x="120" y="75"
+              width="760"
+              height="470"
+              rx="10"/>
+    </clipPath>
+
+    <filter id="redChannel">
+        <feColorMatrix type="matrix"
+        values="
+        1 0 0 0 0.55
+        0 0 0 0 0
+        0 0 0 0 0
+        0 0 0 1 0"/>
+    </filter>
+
+    <filter id="cyanChannel">
+        <feColorMatrix type="matrix"
+        values="
+        0 0 0 0 0
+        0 1 0 0 0.65
+        0 0 1 0 0.65
+        0 0 0 1 0"/>
+    </filter>
+
+    <filter id="softGlow">
+        <feGaussianBlur stdDeviation="2"/>
+    </filter>
+
+    <linearGradient id="scanGradient"
+                    x1="0" y1="0"
+                    x2="0" y2="1">
+        <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+        <stop offset="0.5" stop-color="#55ffcc" stop-opacity="0.10"/>
+        <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <style>
+
+        .glitchRed {{
+            animation: glitchRed 4.5s infinite steps(1);
+        }}
+
+        .glitchCyan {{
+            animation: glitchCyan 5.2s infinite steps(1);
+        }}
+
+        .scan {{
+            animation: scan 3.8s linear infinite;
+        }}
+
+        .flicker {{
+            animation: flicker 4s infinite;
+        }}
+
+        .noise {{
+            animation: noise 1.8s infinite steps(2);
+        }}
+
+        @keyframes glitchRed {{
+
+            0%, 82%, 100% {{
+                transform: translate(0,0);
+                opacity: 0;
+            }}
 
-    # Improve contrast
-    image = ImageOps.autocontrast(image)
+            83% {{
+                transform: translate(8px,-2px);
+                opacity: .42;
+            }}
 
-    # Preserve portrait proportions
-    image.thumbnail(
-        (COLS, ROWS),
-        Image.Resampling.LANCZOS
-    )
+            84% {{
+                transform: translate(-5px,2px);
+                opacity: .25;
+            }}
 
-    canvas = Image.new(
-        "L",
-        (COLS, ROWS),
-        255
-    )
+            85% {{
+                transform: translate(3px,0);
+                opacity: .38;
+            }}
 
-    x = (COLS - image.width) // 2
-    y = (ROWS - image.height) // 2
+            86% {{
+                transform: translate(0,0);
+                opacity: 0;
+            }}
+        }}
 
-    canvas.paste(
-        image,
-        (x, y)
-    )
+        @keyframes glitchCyan {{
 
-    return canvas
+            0%, 67%, 100% {{
+                transform: translate(0,0);
+                opacity: 0;
+            }}
 
+            68% {{
+                transform: translate(-7px,1px);
+                opacity: .38;
+            }}
 
-def build_ascii(image):
+            69% {{
+                transform: translate(4px,-2px);
+                opacity: .25;
+            }}
 
-    lines = []
+            70% {{
+                transform: translate(0,0);
+                opacity: 0;
+            }}
+        }}
 
-    for y in range(ROWS):
+        @keyframes scan {{
 
-        line = []
+            0% {{
+                transform: translateY(-490px);
+                opacity: 0;
+            }}
 
-        for x in range(COLS):
+            12% {{
+                opacity: .7;
+            }}
 
-            pixel = image.getpixel(
-                (x, y)
-            )
+            55% {{
+                opacity: .45;
+            }}
 
-            # Invert because dark pixels
-            # should become strong ASCII
-            pixel = 255 - pixel
+            100% {{
+                transform: translateY(490px);
+                opacity: 0;
+            }}
+        }}
 
-            char = brightness_to_char(
-                pixel
-            )
+        @keyframes flicker {{
 
-            line.append(char)
+            0%, 94%, 100% {{
+                opacity: 1;
+            }}
 
-        lines.append(
-            "".join(line)
-        )
+            95% {{
+                opacity: .82;
+            }}
 
-    return lines
+            96% {{
+                opacity: 1;
+            }}
+        }}
 
-
-def esc(text):
-    return html.escape(text)
-
-
-def main():
-
-    image = load_image()
-
-    ascii_lines = build_ascii(image)
-
-    svg = []
-
-    # ========================================================
-    # SVG HEADER
-    # ========================================================
-
-    svg.append(
-        f'''<svg xmlns="http://www.w3.org/2000/svg"
-        width="{WIDTH}"
-        height="{HEIGHT}"
-        viewBox="0 0 {WIDTH} {HEIGHT}">'''
-    )
-
-    # Background
-    svg.append(
-        '''
-        <rect
-            width="100%"
-            height="100%"
-            rx="18"
-            fill="#05080d"
-        />
-        '''
-    )
-
-    # Outer border
-    svg.append(
-        '''
-        <rect
-            x="1"
-            y="1"
-            width="758"
-            height="648"
-            rx="18"
-            fill="none"
-            stroke="#30363d"
-        />
-        '''
-    )
-
-    # ========================================================
-    # TERMINAL TOP BAR
-    # ========================================================
-
-    svg.append(
-        '''
-        <rect
-            x="1"
-            y="1"
-            width="758"
-            height="48"
-            rx="18"
-            fill="#0d1117"
-        />
-        '''
-    )
-
-    # Hide lower rounded corners of top bar
-    svg.append(
-        '''
-        <rect
-            x="1"
-            y="25"
-            width="758"
-            height="25"
-            fill="#0d1117"
-        />
-        '''
-    )
-
-    # Terminal buttons
-    svg.append(
-        '<circle cx="25" cy="25" r="6" fill="#ff5f56"/>'
-    )
-
-    svg.append(
-        '<circle cx="47" cy="25" r="6" fill="#ffbd2e"/>'
-    )
-
-    svg.append(
-        '<circle cx="69" cy="25" r="6" fill="#27c93f"/>'
-    )
-
-    # Terminal title
-    svg.append(
-        '''
-        <text
-            x="380"
-            y="30"
-            text-anchor="middle"
-            fill="#8b949e"
-            font-family="monospace"
-            font-size="13">
-            aexorr@github:~$ ./portrait.sh
-        </text>
-        '''
-    )
-
-    # Separator
-    svg.append(
-        '''
-        <line
-            x1="1"
-            y1="49"
-            x2="759"
-            y2="49"
-            stroke="#30363d"
-        />
-        '''
-    )
-
-    # ========================================================
-    # STATUS HEADER
-    # ========================================================
-
-    svg.append(
-        '''
-        <text
-            x="30"
-            y="80"
-            fill="#58a6ff"
-            font-family="monospace"
-            font-size="13">
-            [ PROFILE // IDENTITY MATRIX ]
-        </text>
-        '''
-    )
-
-    svg.append(
-        '''
-        <text
-            x="730"
-            y="80"
-            text-anchor="end"
-            fill="#3fb950"
-            font-family="monospace"
-            font-size="12">
-            ONLINE
-        </text>
-        '''
-    )
-
-    # ========================================================
-    # ASCII PORTRAIT PANEL
-    # ========================================================
-
-    PANEL_X = 28
-    PANEL_Y = 100
-    PANEL_W = 704
-    PANEL_H = 430
-
-    svg.append(
-        f'''
-        <rect
-            x="{PANEL_X}"
-            y="{PANEL_Y}"
-            width="{PANEL_W}"
-            height="{PANEL_H}"
-            rx="10"
-            fill="#020409"
-            stroke="#21262d"
-        />
-        '''
-    )
-
-    # Subtle red scan line
-    svg.append(
-        '''
-        <rect
-            x="29"
-            y="105"
-            width="702"
-            height="2"
-            fill="#ff3030"
-            opacity="0.18">
-            <animate
-                attributeName="y"
-                values="105;525;105"
-                dur="4s"
-                repeatCount="indefinite"/>
-        </rect>
-        '''
-    )
-
-    # ASCII text
-    start_x = 70
-    start_y = 135
-
-    for row, line in enumerate(ascii_lines):
-
-        y = start_y + row * CELL_H
-
-        # Different subtle tones based on row
-        if row % 7 == 0:
-            fill = "#c9d1d9"
-        else:
-            fill = "#8b949e"
-
-        svg.append(
-            f'''
-            <text
-                x="{start_x}"
-                y="{y}"
-                fill="{fill}"
-                font-family="monospace"
-                font-size="11"
-                xml:space="preserve">
-                {esc(line)}
-            </text>
-            '''
-        )
-
-    # ========================================================
-    # SYSTEM LABELS
-    # ========================================================
-
-    svg.append(
-        '''
-        <text
-            x="45"
-            y="555"
-            fill="#58a6ff"
-            font-family="monospace"
-            font-size="12">
-            aexorr@github:~$
-        </text>
-        '''
-    )
-
-    svg.append(
-        '''
-        <text
-            x="190"
-            y="555"
-            fill="#c9d1d9"
-            font-family="monospace"
-            font-size="12">
-            whoami
-        </text>
-        '''
-    )
-
-    svg.append(
-        '''
-        <text
-            x="45"
-            y="580"
-            fill="#3fb950"
-            font-family="monospace"
-            font-size="12">
-            &gt; AEXORR // DEVELOPER // BUILDER
-        </text>
-        '''
-    )
-
-    svg.append(
-        '''
-        <text
-            x="45"
-            y="605"
-            fill="#8b949e"
-            font-family="monospace"
-            font-size="11">
-            [ SYSTEM ONLINE ]  [ ACCESS GRANTED ]  [ TRACE ACTIVE ]
-        </text>
-        '''
-    )
-
-    # Cursor
-    svg.append(
-        '''
-        <rect
-            x="45"
-            y="620"
-            width="7"
-            height="13"
-            fill="#58a6ff">
-            <animate
-                attributeName="opacity"
-                values="1;0;1"
-                dur="0.9s"
-                repeatCount="indefinite"/>
-        </rect>
-        '''
-    )
-
-    svg.append("</svg>")
-
-    OUTPUT.write_text(
-        "".join(svg),
-        encoding="utf-8"
-    )
-
-    print(
-        f"wrote {OUTPUT}"
-    )
-
-
-if __name__ == "__main__":
-    main()
+        @keyframes noise {{
+
+            0%, 100% {{
+                opacity: .08;
+            }}
+
+            50% {{
+                opacity: .18;
+            }}
+        }}
+
+    </style>
+
+</defs>
+
+
+<!-- BACKGROUND -->
+
+<rect width="1000"
+      height="620"
+      fill="#05080d"/>
+
+
+<!-- TERMINAL HEADER -->
+
+<rect x="35"
+      y="25"
+      width="930"
+      height="42"
+      rx="8"
+      fill="#0b1119"
+      stroke="#273342"/>
+
+<circle cx="58" cy="46" r="6" fill="#ff4d4d"/>
+<circle cx="80" cy="46" r="6" fill="#ffbd2e"/>
+<circle cx="102" cy="46" r="6" fill="#28c840"/>
+
+<text x="125"
+      y="51"
+      fill="#718096"
+      font-size="14"
+      font-family="monospace">
+    aexorr@github:~$ ./profile.sh
+</text>
+
+
+<!-- PHOTO FRAME -->
+
+<rect x="105"
+      y="70"
+      width="790"
+      height="500"
+      rx="14"
+      fill="#020408"
+      stroke="#263241"
+      stroke-width="2"/>
+
+
+<!-- RED GLITCH COPY -->
+
+<g clip-path="url(#photoClip)"
+   class="glitchRed">
+
+    <image
+        x="120"
+        y="75"
+        width="760"
+        height="470"
+        preserveAspectRatio="xMidYMid meet"
+        href="data:image/png;base64,{data}"
+        filter="url(#redChannel)"/>
+
+</g>
+
+
+<!-- CYAN GLITCH COPY -->
+
+<g clip-path="url(#photoClip)"
+   class="glitchCyan">
+
+    <image
+        x="120"
+        y="75"
+        width="760"
+        height="470"
+        preserveAspectRatio="xMidYMid meet"
+        href="data:image/png;base64,{data}"
+        filter="url(#cyanChannel)"/>
+
+</g>
+
+
+<!-- MAIN REAL PHOTO -->
+
+<g class="flicker">
+
+    <image
+        x="120"
+        y="75"
+        width="760"
+        height="470"
+        preserveAspectRatio="xMidYMid meet"
+        href="data:image/png;base64,{data}"/>
+
+</g>
+
+
+<!-- SCANLINES -->
+
+<g clip-path="url(#photoClip)"
+   class="noise">
+
+    <rect x="120"
+          y="75"
+          width="760"
+          height="470"
+          fill="url(#scanGradient)"
+          opacity=".25"/>
+
+    <g stroke="#ffffff"
+       stroke-opacity=".055">
+
+'''
+
+# Horizontal scanlines
+for y in range(82, 545, 6):
+    svg += f'''
+        <line x1="120"
+              y1="{y}"
+              x2="880"
+              y2="{y}"/>
+'''
+
+svg += f'''
+    </g>
+
+</g>
+
+
+<!-- MOVING SCAN BAR -->
+
+<rect x="120"
+      y="75"
+      width="760"
+      height="3"
+      fill="#7fffd4"
+      opacity=".28"
+      class="scan"
+      clip-path="url(#photoClip)"/>
+
+
+<!-- TERMINAL STATUS -->
+
+<text x="125"
+      y="592"
+      fill="#4f6275"
+      font-size="13"
+      font-family="monospace">
+    IDENTITY: AEXORR
+</text>
+
+<text x="430"
+      y="592"
+      fill="#4f6275"
+      font-size="13"
+      font-family="monospace">
+    STATUS: ONLINE
+</text>
+
+<text x="720"
+      y="592"
+      fill="#39ff88"
+      font-size="13"
+      font-family="monospace">
+    [ ACCESS GRANTED ]
+</text>
+
+</svg>
+'''
+
+OUTPUT.write_text(svg, encoding="utf-8")
+print(f"wrote {{OUTPUT}}")
+
+
+print(f"wrote {{OUTPUT}}")
