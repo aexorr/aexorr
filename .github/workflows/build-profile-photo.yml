@@ -1,0 +1,46 @@
+name: Build profile photo
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - "source-photo.png"
+      - "scripts/prep_photo.py"
+      - "scripts/make_ascii_svg.py"
+      - "scripts/requirements.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  build-photo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install image dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+
+      - name: Prepare photo
+        run: |
+          python scripts/prep_photo.py
+
+      - name: Generate ASCII SVG
+        run: |
+          python scripts/make_ascii_svg.py
+
+      - name: Commit generated artwork
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: rebuild profile artwork"
+          file_pattern: "source-prepped.png avi-ascii.svg"
