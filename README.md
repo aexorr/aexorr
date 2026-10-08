@@ -28,19 +28,9 @@
 │                    [ ACCESS GRANTED ]                               │
 │                                                                      │
 └──────────────────────────────────────────────────────────────────────┘
-┌──[ AEXORR ]──────────────────────────────────────────────────────────┐
-│                                                                      │
-│  > Developer                                                         │
-│  > Builder                                                          │
-│  > Experimenter                                                      │
-│  > Problem Solver                                                    │
-│                                                                      │
-│  I build things.                                                     │
-│  I break things.                                                     │
-│  I learn how they work.                                              │
-│  Then I build them better.                                           │
-│                                                                      │
-└──────────────────────────────────────────────────────────────────────┘
+<div align="center">
+  <img src="./identity-card.svg" width="100%" alt="Aexorr Identity Protocol">
+</div>
 ╭──────────────────────────────────────────────────────────────────────╮
 │                                                                      │
 │  USER        :: aexorr                                                │
