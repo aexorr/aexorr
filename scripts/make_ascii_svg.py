@@ -1,9 +1,7 @@
 from pathlib import Path
 import base64
-import html
 
-from PIL import Image, ImageEnhance, ImageOps
-
+from PIL import Image, ImageEnhance
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -11,34 +9,39 @@ ROOT = HERE.parent
 SOURCE = ROOT / "source-photo.png"
 OUTPUT = ROOT / "avi-ascii.svg"
 
-WIDTH = 1000
-HEIGHT = 620
-
+# Compact premium layout
+WIDTH = 900
+HEIGHT = 560
 
 # -------------------------
-# Prepare normal photo
+# Prepare photo
 # -------------------------
 
 img = Image.open(SOURCE).convert("RGB")
 
-# Keep the real photo — no ASCII conversion.
-img.thumbnail((760, 470), Image.Resampling.LANCZOS)
+# Smaller portrait area
+img.thumbnail((540, 390), Image.Resampling.LANCZOS)
 
-# Slight contrast boost
-img = ImageEnhance.Contrast(img).enhance(1.08)
+# Slight cinematic treatment
+img = ImageEnhance.Contrast(img).enhance(1.10)
+img = ImageEnhance.Brightness(img).enhance(0.90)
+img = ImageEnhance.Sharpness(img).enhance(1.08)
 
-# Darken slightly for cyber-terminal look
-img = ImageEnhance.Brightness(img).enhance(0.88)
+PHOTO_W = 540
+PHOTO_H = 390
 
-# Put photo inside a fixed canvas
-canvas = Image.new("RGB", (760, 470), (8, 12, 18))
+canvas = Image.new(
+    "RGB",
+    (PHOTO_W, PHOTO_H),
+    (5, 8, 13)
+)
 
-x = (760 - img.width) // 2
-y = (470 - img.height) // 2
+x = (PHOTO_W - img.width) // 2
+y = (PHOTO_H - img.height) // 2
 
 canvas.paste(img, (x, y))
 
-# Encode image inside SVG
+# Encode image
 temp = ROOT / "_profile_temp.png"
 canvas.save(temp, "PNG")
 
@@ -47,7 +50,6 @@ data = base64.b64encode(
 ).decode("ascii")
 
 temp.unlink(missing_ok=True)
-
 
 # -------------------------
 # SVG
@@ -61,334 +63,418 @@ viewBox="0 0 {WIDTH} {HEIGHT}">
 
 <defs>
 
-    <clipPath id="photoClip">
-        <rect x="120" y="75"
-              width="760"
-              height="470"
-              rx="10"/>
-    </clipPath>
+  <clipPath id="photoClip">
+    <rect
+      x="180"
+      y="92"
+      width="{PHOTO_W}"
+      height="{PHOTO_H}"
+      rx="10"/>
+  </clipPath>
 
-    <filter id="redChannel">
-        <feColorMatrix type="matrix"
-        values="
-        1 0 0 0 0.55
-        0 0 0 0 0
-        0 0 0 0 0
-        0 0 0 1 0"/>
-    </filter>
+  <filter id="redGlitch">
+    <feColorMatrix type="matrix"
+      values="
+      1 0 0 0 0.45
+      0 0 0 0 0
+      0 0 0 0 0
+      0 0 0 1 0"/>
+  </filter>
 
-    <filter id="cyanChannel">
-        <feColorMatrix type="matrix"
-        values="
-        0 0 0 0 0
-        0 1 0 0 0.65
-        0 0 1 0 0.65
-        0 0 0 1 0"/>
-    </filter>
+  <filter id="cyanGlitch">
+    <feColorMatrix type="matrix"
+      values="
+      0 0 0 0 0
+      0 1 0 0 0.55
+      0 0 1 0 0.65
+      0 0 0 1 0"/>
+  </filter>
 
-    <filter id="softGlow">
-        <feGaussianBlur stdDeviation="2"/>
-    </filter>
+  <filter id="glow">
+    <feGaussianBlur stdDeviation="3"/>
+  </filter>
 
-    <linearGradient id="scanGradient"
-                    x1="0" y1="0"
-                    x2="0" y2="1">
-        <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
-        <stop offset="0.5" stop-color="#55ffcc" stop-opacity="0.10"/>
-        <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-    </linearGradient>
+  <linearGradient id="scanGradient"
+    x1="0" y1="0"
+    x2="0" y2="1">
 
-    <style>
+    <stop offset="0"
+      stop-color="#66ffe0"
+      stop-opacity="0"/>
 
-        .glitchRed {{
-            animation: glitchRed 4.5s infinite steps(1);
-        }}
+    <stop offset="0.5"
+      stop-color="#66ffe0"
+      stop-opacity="0.16"/>
 
-        .glitchCyan {{
-            animation: glitchCyan 5.2s infinite steps(1);
-        }}
+    <stop offset="1"
+      stop-color="#66ffe0"
+      stop-opacity="0"/>
 
-        .scan {{
-            animation: scan 3.8s linear infinite;
-        }}
+  </linearGradient>
 
-        .flicker {{
-            animation: flicker 4s infinite;
-        }}
+  <style>
 
-        .noise {{
-            animation: noise 1.8s infinite steps(2);
-        }}
+    .red {{
+      animation: redGlitch 5.5s infinite steps(1);
+    }}
 
-        @keyframes glitchRed {{
+    .cyan {{
+      animation: cyanGlitch 6.2s infinite steps(1);
+    }}
 
-            0%, 82%, 100% {{
-                transform: translate(0,0);
-                opacity: 0;
-            }}
+    .scan {{
+      animation: scan 4.5s linear infinite;
+    }}
 
-            83% {{
-                transform: translate(8px,-2px);
-                opacity: .42;
-            }}
+    .flicker {{
+      animation: flicker 6s infinite;
+    }}
 
-            84% {{
-                transform: translate(-5px,2px);
-                opacity: .25;
-            }}
+    @keyframes redGlitch {{
 
-            85% {{
-                transform: translate(3px,0);
-                opacity: .38;
-            }}
+      0%, 88%, 100% {{
+        opacity: 0;
+        transform: translate(0,0);
+      }}
 
-            86% {{
-                transform: translate(0,0);
-                opacity: 0;
-            }}
-        }}
+      89% {{
+        opacity: .30;
+        transform: translate(6px,0);
+      }}
 
-        @keyframes glitchCyan {{
+      90% {{
+        opacity: .16;
+        transform: translate(-4px,1px);
+      }}
 
-            0%, 67%, 100% {{
-                transform: translate(0,0);
-                opacity: 0;
-            }}
+      91% {{
+        opacity: 0;
+        transform: translate(0,0);
+      }}
 
-            68% {{
-                transform: translate(-7px,1px);
-                opacity: .38;
-            }}
+    }}
 
-            69% {{
-                transform: translate(4px,-2px);
-                opacity: .25;
-            }}
+    @keyframes cyanGlitch {{
 
-            70% {{
-                transform: translate(0,0);
-                opacity: 0;
-            }}
-        }}
+      0%, 72%, 100% {{
+        opacity: 0;
+        transform: translate(0,0);
+      }}
 
-        @keyframes scan {{
+      73% {{
+        opacity: .25;
+        transform: translate(-5px,0);
+      }}
 
-            0% {{
-                transform: translateY(-490px);
-                opacity: 0;
-            }}
+      74% {{
+        opacity: .12;
+        transform: translate(3px,-1px);
+      }}
 
-            12% {{
-                opacity: .7;
-            }}
+      75% {{
+        opacity: 0;
+        transform: translate(0,0);
+      }}
 
-            55% {{
-                opacity: .45;
-            }}
+    }}
 
-            100% {{
-                transform: translateY(490px);
-                opacity: 0;
-            }}
-        }}
+    @keyframes scan {{
 
-        @keyframes flicker {{
+      0% {{
+        transform: translateY(-400px);
+        opacity: 0;
+      }}
 
-            0%, 94%, 100% {{
-                opacity: 1;
-            }}
+      12% {{
+        opacity: .65;
+      }}
 
-            95% {{
-                opacity: .82;
-            }}
+      50% {{
+        opacity: .35;
+      }}
 
-            96% {{
-                opacity: 1;
-            }}
-        }}
+      100% {{
+        transform: translateY(400px);
+        opacity: 0;
+      }}
 
-        @keyframes noise {{
+    }}
 
-            0%, 100% {{
-                opacity: .08;
-            }}
+    @keyframes flicker {{
 
-            50% {{
-                opacity: .18;
-            }}
-        }}
+      0%, 96%, 100% {{
+        opacity: 1;
+      }}
 
-    </style>
+      97% {{
+        opacity: .90;
+      }}
+
+      98% {{
+        opacity: 1;
+      }}
+
+    }}
+
+  </style>
 
 </defs>
 
-
 <!-- BACKGROUND -->
 
-<rect width="1000"
-      height="620"
-      fill="#05080d"/>
+<rect
+  width="900"
+  height="560"
+  fill="#04070b"/>
 
+<!-- VERY SUBTLE GRID -->
+
+<g
+  stroke="#17212c"
+  stroke-width="1"
+  opacity=".22">
+
+  <line x1="45" y1="70" x2="855" y2="70"/>
+  <line x1="45" y1="500" x2="855" y2="500"/>
+
+</g>
 
 <!-- TERMINAL HEADER -->
 
-<rect x="35"
-      y="25"
-      width="930"
-      height="42"
-      rx="8"
-      fill="#0b1119"
-      stroke="#273342"/>
+<rect
+  x="40"
+  y="24"
+  width="820"
+  height="40"
+  rx="8"
+  fill="#0a1017"
+  stroke="#263441"/>
 
-<circle cx="58" cy="46" r="6" fill="#ff4d4d"/>
-<circle cx="80" cy="46" r="6" fill="#ffbd2e"/>
-<circle cx="102" cy="46" r="6" fill="#28c840"/>
+<circle cx="61" cy="44" r="5" fill="#ff4d4d"/>
+<circle cx="80" cy="44" r="5" fill="#ffbd2e"/>
+<circle cx="99" cy="44" r="5" fill="#28c840"/>
 
-<text x="125"
-      y="51"
-      fill="#718096"
-      font-size="14"
-      font-family="monospace">
-    aexorr@github:~$ ./profile.sh
+<text
+  x="122"
+  y="49"
+  fill="#7d8b99"
+  font-size="13"
+  font-family="monospace">
+
+  aexorr@github:~$ ./profile.sh
+
 </text>
 
+<!-- OUTER PHOTO FRAME -->
 
-<!-- PHOTO FRAME -->
+<rect
+  x="150"
+  y="76"
+  width="600"
+  height="422"
+  rx="16"
+  fill="#02050a"
+  stroke="#263542"
+  stroke-width="2"/>
 
-<rect x="105"
-      y="70"
-      width="790"
-      height="500"
-      rx="14"
-      fill="#020408"
-      stroke="#263241"
-      stroke-width="2"/>
+<!-- GLOW BORDER -->
 
+<rect
+  x="153"
+  y="79"
+  width="594"
+  height="416"
+  rx="14"
+  fill="none"
+  stroke="#53e6c5"
+  stroke-width="1"
+  opacity=".16"
+  filter="url(#glow)"/>
 
-<!-- RED GLITCH COPY -->
+<!-- RED GLITCH -->
 
-<g clip-path="url(#photoClip)"
-   class="glitchRed">
+<g
+  clip-path="url(#photoClip)"
+  class="red">
 
-    <image
-        x="120"
-        y="75"
-        width="760"
-        height="470"
-        preserveAspectRatio="xMidYMid meet"
-        href="data:image/png;base64,{data}"
-        filter="url(#redChannel)"/>
-
-</g>
-
-
-<!-- CYAN GLITCH COPY -->
-
-<g clip-path="url(#photoClip)"
-   class="glitchCyan">
-
-    <image
-        x="120"
-        y="75"
-        width="760"
-        height="470"
-        preserveAspectRatio="xMidYMid meet"
-        href="data:image/png;base64,{data}"
-        filter="url(#cyanChannel)"/>
+  <image
+    x="180"
+    y="92"
+    width="{PHOTO_W}"
+    height="{PHOTO_H}"
+    preserveAspectRatio="xMidYMid meet"
+    href="data:image/png;base64,{data}"
+    filter="url(#redGlitch)"/>
 
 </g>
 
+<!-- CYAN GLITCH -->
 
-<!-- MAIN REAL PHOTO -->
+<g
+  clip-path="url(#photoClip)"
+  class="cyan">
+
+  <image
+    x="180"
+    y="92"
+    width="{PHOTO_W}"
+    height="{PHOTO_H}"
+    preserveAspectRatio="xMidYMid meet"
+    href="data:image/png;base64,{data}"
+    filter="url(#cyanGlitch)"/>
+
+</g>
+
+<!-- MAIN PHOTO -->
 
 <g class="flicker">
 
-    <image
-        x="120"
-        y="75"
-        width="760"
-        height="470"
-        preserveAspectRatio="xMidYMid meet"
-        href="data:image/png;base64,{data}"/>
+  <image
+    x="180"
+    y="92"
+    width="{PHOTO_W}"
+    height="{PHOTO_H}"
+    preserveAspectRatio="xMidYMid meet"
+    href="data:image/png;base64,{data}"/>
 
 </g>
 
+<!-- PHOTO INNER BORDER -->
+
+<rect
+  x="180"
+  y="92"
+  width="{PHOTO_W}"
+  height="{PHOTO_H}"
+  rx="10"
+  fill="none"
+  stroke="#52616f"
+  stroke-width="1"
+  opacity=".35"/>
 
 <!-- SCANLINES -->
 
-<g clip-path="url(#photoClip)"
-   class="noise">
+<g
+  clip-path="url(#photoClip)"
+  opacity=".22">
 
-    <rect x="120"
-          y="75"
-          width="760"
-          height="470"
-          fill="url(#scanGradient)"
-          opacity=".25"/>
+  <rect
+    x="180"
+    y="92"
+    width="{PHOTO_W}"
+    height="{PHOTO_H}"
+    fill="url(#scanGradient)"
+    class="scan"/>
 
-    <g stroke="#ffffff"
-       stroke-opacity=".055">
+  <g
+    stroke="#ffffff"
+    stroke-opacity=".045">
 
 '''
 
-# Horizontal scanlines
-for y in range(82, 545, 6):
+# Fine scanlines
+for y in range(98, 478, 7):
     svg += f'''
-        <line x1="120"
-              y1="{y}"
-              x2="880"
-              y2="{y}"/>
+    <line
+      x1="180"
+      y1="{y}"
+      x2="720"
+      y2="{y}"/>
 '''
 
 svg += f'''
-    </g>
+
+  </g>
 
 </g>
 
-
 <!-- MOVING SCAN BAR -->
 
-<rect x="120"
-      y="75"
-      width="760"
-      height="3"
-      fill="#7fffd4"
-      opacity=".28"
-      class="scan"
-      clip-path="url(#photoClip)"/>
+<rect
+  x="180"
+  y="92"
+  width="{PHOTO_W}"
+  height="2"
+  fill="#64ffe0"
+  opacity=".32"
+  class="scan"
+  clip-path="url(#photoClip)"/>
 
+<!-- CORNER MARKERS -->
 
-<!-- TERMINAL STATUS -->
+<g
+  stroke="#61e6c5"
+  stroke-width="2"
+  opacity=".65">
 
-<text x="125"
-      y="592"
-      fill="#4f6275"
-      font-size="13"
-      font-family="monospace">
-    IDENTITY: AEXORR
+  <line x1="164" y1="108" x2="164" y2="126"/>
+  <line x1="164" y1="108" x2="182" y2="108"/>
+
+  <line x1="736" y1="108" x2="736" y2="126"/>
+  <line x1="718" y1="108" x2="736" y2="108"/>
+
+  <line x1="164" y1="466" x2="164" y2="484"/>
+  <line x1="164" y1="484" x2="182" y2="484"/>
+
+  <line x1="736" y1="466" x2="736" y2="484"/>
+  <line x1="718" y1="484" x2="736" y2="484"/>
+
+</g>
+
+<!-- STATUS BAR -->
+
+<text
+  x="160"
+  y="525"
+  fill="#647586"
+  font-size="12"
+  font-family="monospace">
+
+  IDENTITY: AEXORR
+
 </text>
 
-<text x="430"
-      y="592"
-      fill="#4f6275"
-      font-size="13"
-      font-family="monospace">
-    STATUS: ONLINE
+<text
+  x="405"
+  y="525"
+  fill="#647586"
+  font-size="12"
+  font-family="monospace">
+
+  STATUS: ONLINE
+
 </text>
 
-<text x="720"
-      y="592"
-      fill="#39ff88"
-      font-size="13"
-      font-family="monospace">
-    [ ACCESS GRANTED ]
+<text
+  x="650"
+  y="525"
+  fill="#39ff88"
+  font-size="12"
+  font-family="monospace">
+
+  [ ACCESS GRANTED ]
+
 </text>
+
+<!-- BOTTOM ACCENT -->
+
+<line
+  x1="160"
+  y1="540"
+  x2="740"
+  y2="540"
+  stroke="#182630"
+  stroke-width="1"/>
+
+<circle
+  cx="160"
+  cy="540"
+  r="2"
+  fill="#39ff88"/>
 
 </svg>
 '''
 
 OUTPUT.write_text(svg, encoding="utf-8")
-print(f"wrote {{OUTPUT}}")
 
-
-print(f"wrote {{OUTPUT}}")
+print(f"wrote {OUTPUT}")
