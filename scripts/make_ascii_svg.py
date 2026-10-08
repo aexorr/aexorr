@@ -1,7 +1,7 @@
 from pathlib import Path
 import base64
 
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageFilter
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -9,51 +9,43 @@ ROOT = HERE.parent
 SOURCE = ROOT / "source-photo.png"
 OUTPUT = ROOT / "avi-ascii.svg"
 
-# Compact premium layout
-WIDTH = 900
-HEIGHT = 560
+WIDTH = 1000
+HEIGHT = 620
 
-# -------------------------
-# Prepare photo
-# -------------------------
+# --------------------------------------------------
+# PHOTO
+# --------------------------------------------------
 
 img = Image.open(SOURCE).convert("RGB")
 
-# Smaller portrait area
-img.thumbnail((540, 390), Image.Resampling.LANCZOS)
+img.thumbnail((430, 430), Image.Resampling.LANCZOS)
 
-# Slight cinematic treatment
-img = ImageEnhance.Contrast(img).enhance(1.10)
-img = ImageEnhance.Brightness(img).enhance(0.90)
-img = ImageEnhance.Sharpness(img).enhance(1.08)
+img = ImageEnhance.Contrast(img).enhance(1.12)
+img = ImageEnhance.Brightness(img).enhance(0.88)
+img = ImageEnhance.Sharpness(img).enhance(1.12)
 
-PHOTO_W = 540
-PHOTO_H = 390
+PHOTO_W = 430
+PHOTO_H = 430
 
-canvas = Image.new(
-    "RGB",
-    (PHOTO_W, PHOTO_H),
-    (5, 8, 13)
-)
+canvas = Image.new("RGB", (PHOTO_W, PHOTO_H), (4, 7, 11))
 
 x = (PHOTO_W - img.width) // 2
 y = (PHOTO_H - img.height) // 2
 
 canvas.paste(img, (x, y))
 
-# Encode image
-temp = ROOT / "_profile_temp.png"
+temp = ROOT / "_aexorr_profile.png"
 canvas.save(temp, "PNG")
 
-data = base64.b64encode(
+photo_data = base64.b64encode(
     temp.read_bytes()
 ).decode("ascii")
 
 temp.unlink(missing_ok=True)
 
-# -------------------------
+# --------------------------------------------------
 # SVG
-# -------------------------
+# --------------------------------------------------
 
 svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
 xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -64,413 +56,543 @@ viewBox="0 0 {WIDTH} {HEIGHT}">
 <defs>
 
   <clipPath id="photoClip">
-    <rect
-      x="180"
-      y="92"
-      width="{PHOTO_W}"
-      height="{PHOTO_H}"
-      rx="10"/>
+    <rect x="74" y="122"
+          width="430"
+          height="430"
+          rx="8"/>
   </clipPath>
 
-  <filter id="redGlitch">
-    <feColorMatrix type="matrix"
-      values="
-      1 0 0 0 0.45
-      0 0 0 0 0
-      0 0 0 0 0
-      0 0 0 1 0"/>
-  </filter>
-
-  <filter id="cyanGlitch">
-    <feColorMatrix type="matrix"
-      values="
-      0 0 0 0 0
-      0 1 0 0 0.55
-      0 0 1 0 0.65
-      0 0 0 1 0"/>
-  </filter>
-
-  <filter id="glow">
+  <filter id="cyanGlow">
     <feGaussianBlur stdDeviation="3"/>
   </filter>
 
-  <linearGradient id="scanGradient"
-    x1="0" y1="0"
-    x2="0" y2="1">
-
-    <stop offset="0"
-      stop-color="#66ffe0"
-      stop-opacity="0"/>
-
-    <stop offset="0.5"
-      stop-color="#66ffe0"
-      stop-opacity="0.16"/>
-
-    <stop offset="1"
-      stop-color="#66ffe0"
-      stop-opacity="0"/>
-
-  </linearGradient>
+  <filter id="softGlow">
+    <feGaussianBlur stdDeviation="6"/>
+  </filter>
 
   <style>
 
-    .red {{
-      animation: redGlitch 5.5s infinite steps(1);
+    text {{
+      font-family: "Courier New", monospace;
     }}
 
     .cyan {{
-      animation: cyanGlitch 6.2s infinite steps(1);
+      fill: #55ffe1;
+    }}
+
+    .green {{
+      fill: #39ff88;
+    }}
+
+    .red {{
+      fill: #ff4d67;
+    }}
+
+    .dim {{
+      fill: #506473;
+    }}
+
+    .muted {{
+      fill: #78909c;
+    }}
+
+    .value {{
+      fill: #a6fff0;
+    }}
+
+    .small {{
+      font-size: 11px;
+      letter-spacing: 2px;
+    }}
+
+    .tiny {{
+      font-size: 9px;
+      letter-spacing: 1.5px;
+    }}
+
+    .label {{
+      font-size: 12px;
+      letter-spacing: 2px;
+    }}
+
+    .main {{
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 4px;
+    }}
+
+    .glitch-red {{
+      animation: glitchRed 5s infinite steps(1);
+    }}
+
+    .glitch-cyan {{
+      animation: glitchCyan 6s infinite steps(1);
     }}
 
     .scan {{
-      animation: scan 4.5s linear infinite;
+      animation: scan 4s linear infinite;
     }}
 
     .flicker {{
-      animation: flicker 6s infinite;
+      animation: flicker 7s infinite;
     }}
 
-    @keyframes redGlitch {{
-
-      0%, 88%, 100% {{
+    @keyframes glitchRed {{
+      0%, 90%, 100% {{
         opacity: 0;
         transform: translate(0,0);
-      }}
-
-      89% {{
-        opacity: .30;
-        transform: translate(6px,0);
-      }}
-
-      90% {{
-        opacity: .16;
-        transform: translate(-4px,1px);
       }}
 
       91% {{
-        opacity: 0;
-        transform: translate(0,0);
+        opacity: .45;
+        transform: translate(5px,0);
       }}
 
+      92% {{
+        opacity: .15;
+        transform: translate(-3px,1px);
+      }}
+
+      93% {{
+        opacity: 0;
+      }}
     }}
 
-    @keyframes cyanGlitch {{
-
-      0%, 72%, 100% {{
+    @keyframes glitchCyan {{
+      0%, 76%, 100% {{
         opacity: 0;
         transform: translate(0,0);
       }}
 
-      73% {{
-        opacity: .25;
+      77% {{
+        opacity: .35;
         transform: translate(-5px,0);
       }}
 
-      74% {{
+      78% {{
         opacity: .12;
         transform: translate(3px,-1px);
       }}
 
-      75% {{
+      79% {{
         opacity: 0;
-        transform: translate(0,0);
       }}
-
     }}
 
     @keyframes scan {{
-
       0% {{
-        transform: translateY(-400px);
+        transform: translateY(-450px);
         opacity: 0;
       }}
 
-      12% {{
-        opacity: .65;
+      15% {{
+        opacity: .55;
       }}
 
       50% {{
-        opacity: .35;
+        opacity: .18;
       }}
 
       100% {{
-        transform: translateY(400px);
+        transform: translateY(450px);
         opacity: 0;
       }}
-
     }}
 
     @keyframes flicker {{
-
       0%, 96%, 100% {{
         opacity: 1;
       }}
 
       97% {{
-        opacity: .90;
+        opacity: .86;
       }}
 
       98% {{
         opacity: 1;
       }}
-
     }}
 
   </style>
 
 </defs>
 
+<!-- ================================================= -->
 <!-- BACKGROUND -->
+<!-- ================================================= -->
 
 <rect
-  width="900"
-  height="560"
-  fill="#04070b"/>
+  width="1000"
+  height="620"
+  fill="#03070b"/>
 
-<!-- VERY SUBTLE GRID -->
+<!-- subtle cyber grid -->
 
 <g
-  stroke="#17212c"
+  stroke="#10202a"
   stroke-width="1"
-  opacity=".22">
+  opacity=".38">
 
-  <line x1="45" y1="70" x2="855" y2="70"/>
-  <line x1="45" y1="500" x2="855" y2="500"/>
+  <line x1="40" y1="90" x2="960" y2="90"/>
+  <line x1="40" y1="580" x2="960" y2="580"/>
+
+  <line x1="40" y1="90" x2="40" y2="580"/>
+  <line x1="960" y1="90" x2="960" y2="580"/>
 
 </g>
 
+<!-- ================================================= -->
 <!-- TERMINAL HEADER -->
+<!-- ================================================= -->
 
 <rect
   x="40"
-  y="24"
-  width="820"
-  height="40"
-  rx="8"
-  fill="#0a1017"
-  stroke="#263441"/>
+  y="28"
+  width="920"
+  height="42"
+  rx="7"
+  fill="#071017"
+  stroke="#20333e"/>
 
-<circle cx="61" cy="44" r="5" fill="#ff4d4d"/>
-<circle cx="80" cy="44" r="5" fill="#ffbd2e"/>
-<circle cx="99" cy="44" r="5" fill="#28c840"/>
+<circle cx="62" cy="49" r="5" fill="#ff4d5c"/>
+<circle cx="80" cy="49" r="5" fill="#ffbd2e"/>
+<circle cx="98" cy="49" r="5" fill="#32d74b"/>
 
 <text
   x="122"
-  y="49"
-  fill="#7d8b99"
-  font-size="13"
-  font-family="monospace">
+  y="54"
+  class="small cyan">
 
-  aexorr@github:~$ ./profile.sh
+  AEXORR@GITHUB:~$ ./PROFILE.SH
 
 </text>
 
-<!-- OUTER PHOTO FRAME -->
+<text
+  x="790"
+  y="54"
+  class="tiny dim">
+
+  SESSION_07
+
+</text>
+
+<!-- ================================================= -->
+<!-- LEFT PHOTO PANEL -->
+<!-- ================================================= -->
 
 <rect
-  x="150"
-  y="76"
-  width="600"
-  height="422"
-  rx="16"
-  fill="#02050a"
-  stroke="#263542"
+  x="50"
+  y="100"
+  width="500"
+  height="470"
+  rx="13"
+  fill="#050a0f"
+  stroke="#213640"
   stroke-width="2"/>
 
-<!-- GLOW BORDER -->
+<!-- cyan glow -->
 
 <rect
-  x="153"
-  y="79"
-  width="594"
-  height="416"
-  rx="14"
+  x="53"
+  y="103"
+  width="494"
+  height="464"
+  rx="11"
   fill="none"
-  stroke="#53e6c5"
-  stroke-width="1"
-  opacity=".16"
-  filter="url(#glow)"/>
+  stroke="#3fffd0"
+  stroke-width="2"
+  opacity=".10"
+  filter="url(#softGlow)"/>
 
-<!-- RED GLITCH -->
-
-<g
-  clip-path="url(#photoClip)"
-  class="red">
-
-  <image
-    x="180"
-    y="92"
-    width="{PHOTO_W}"
-    height="{PHOTO_H}"
-    preserveAspectRatio="xMidYMid meet"
-    href="data:image/png;base64,{data}"
-    filter="url(#redGlitch)"/>
-
-</g>
-
-<!-- CYAN GLITCH -->
-
-<g
-  clip-path="url(#photoClip)"
-  class="cyan">
-
-  <image
-    x="180"
-    y="92"
-    width="{PHOTO_W}"
-    height="{PHOTO_H}"
-    preserveAspectRatio="xMidYMid meet"
-    href="data:image/png;base64,{data}"
-    filter="url(#cyanGlitch)"/>
-
-</g>
-
-<!-- MAIN PHOTO -->
+<!-- photo -->
 
 <g class="flicker">
 
   <image
-    x="180"
-    y="92"
-    width="{PHOTO_W}"
-    height="{PHOTO_H}"
+    x="74"
+    y="122"
+    width="430"
+    height="430"
     preserveAspectRatio="xMidYMid meet"
-    href="data:image/png;base64,{data}"/>
+    href="data:image/png;base64,{photo_data}"/>
 
 </g>
 
-<!-- PHOTO INNER BORDER -->
-
-<rect
-  x="180"
-  y="92"
-  width="{PHOTO_W}"
-  height="{PHOTO_H}"
-  rx="10"
-  fill="none"
-  stroke="#52616f"
-  stroke-width="1"
-  opacity=".35"/>
-
-<!-- SCANLINES -->
+<!-- RGB glitch layers -->
 
 <g
   clip-path="url(#photoClip)"
-  opacity=".22">
+  class="glitch-red">
 
-  <rect
-    x="180"
-    y="92"
-    width="{PHOTO_W}"
-    height="{PHOTO_H}"
-    fill="url(#scanGradient)"
-    class="scan"/>
+  <image
+    x="74"
+    y="122"
+    width="430"
+    height="430"
+    preserveAspectRatio="xMidYMid meet"
+    href="data:image/png;base64,{photo_data}"
+    opacity=".5"/>
 
-  <g
-    stroke="#ffffff"
-    stroke-opacity=".045">
+</g>
+
+<g
+  clip-path="url(#photoClip)"
+  class="glitch-cyan">
+
+  <image
+    x="74"
+    y="122"
+    width="430"
+    height="430"
+    preserveAspectRatio="xMidYMid meet"
+    href="data:image/png;base64,{photo_data}"
+    opacity=".5"/>
+
+</g>
+
+<!-- scanlines -->
+
+<g
+  clip-path="url(#photoClip)"
+  opacity=".16"
+  stroke="#6affea">
 
 '''
 
-# Fine scanlines
-for y in range(98, 478, 7):
+for y in range(126, 550, 8):
     svg += f'''
-    <line
-      x1="180"
-      y1="{y}"
-      x2="720"
-      y2="{y}"/>
+  <line x1="74" y1="{y}" x2="504" y2="{y}"/>
 '''
 
 svg += f'''
 
-  </g>
-
 </g>
 
-<!-- MOVING SCAN BAR -->
+<!-- moving scan bar -->
 
 <rect
-  x="180"
-  y="92"
-  width="{PHOTO_W}"
+  x="74"
+  y="122"
+  width="430"
   height="2"
-  fill="#64ffe0"
-  opacity=".32"
+  fill="#56ffe0"
+  opacity=".45"
   class="scan"
   clip-path="url(#photoClip)"/>
 
-<!-- CORNER MARKERS -->
+<!-- photo border -->
+
+<rect
+  x="74"
+  y="122"
+  width="430"
+  height="430"
+  rx="8"
+  fill="none"
+  stroke="#304854"
+  stroke-width="1"/>
+
+<!-- corner HUD -->
 
 <g
-  stroke="#61e6c5"
+  stroke="#4fffe0"
   stroke-width="2"
-  opacity=".65">
+  fill="none"
+  opacity=".85">
 
-  <line x1="164" y1="108" x2="164" y2="126"/>
-  <line x1="164" y1="108" x2="182" y2="108"/>
+  <path d="M60 140 V120 H80"/>
+  <path d="M520 120 H540 V140"/>
 
-  <line x1="736" y1="108" x2="736" y2="126"/>
-  <line x1="718" y1="108" x2="736" y2="108"/>
-
-  <line x1="164" y1="466" x2="164" y2="484"/>
-  <line x1="164" y1="484" x2="182" y2="484"/>
-
-  <line x1="736" y1="466" x2="736" y2="484"/>
-  <line x1="718" y1="484" x2="736" y2="484"/>
+  <path d="M60 530 V550 H80"/>
+  <path d="M520 550 H540 V530"/>
 
 </g>
 
-<!-- STATUS BAR -->
+<!-- photo panel status -->
+
+<text x="70" y="108" class="tiny dim">
+  CAMERA_FEED // 001
+</text>
+
+<text x="405" y="108" class="tiny green">
+  LIVE
+</text>
+
+<!-- ================================================= -->
+<!-- RIGHT SYSTEM PANEL -->
+<!-- ================================================= -->
 
 <text
-  x="160"
-  y="525"
-  fill="#647586"
-  font-size="12"
-  font-family="monospace">
+  x="590"
+  y="118"
+  class="tiny dim">
 
-  IDENTITY: AEXORR
+  // SYSTEM_IDENTITY
 
 </text>
 
 <text
-  x="405"
-  y="525"
-  fill="#647586"
-  font-size="12"
-  font-family="monospace">
+  x="590"
+  y="153"
+  class="main cyan">
 
-  STATUS: ONLINE
+  AEXORR
 
 </text>
 
 <text
-  x="650"
-  y="525"
-  fill="#39ff88"
-  font-size="12"
-  font-family="monospace">
+  x="592"
+  y="178"
+  class="tiny muted">
 
-  [ ACCESS GRANTED ]
+  DIGITAL ENTITY / DEVELOPER NODE
 
 </text>
-
-<!-- BOTTOM ACCENT -->
 
 <line
-  x1="160"
-  y1="540"
-  x2="740"
-  y2="540"
-  stroke="#182630"
-  stroke-width="1"/>
+  x1="590"
+  y1="194"
+  x2="930"
+  y2="194"
+  stroke="#19323b"/>
+
+<!-- system -->
+
+<text x="590" y="225" class="tiny dim">
+  SYSTEM
+</text>
+
+<text x="590" y="248" class="label value">
+  ONLINE // STABLE
+</text>
+
+<!-- user -->
+
+<text x="590" y="282" class="tiny dim">
+  USER
+</text>
+
+<text x="590" y="305" class="label cyan">
+  AEXORR
+</text>
+
+<!-- role -->
+
+<text x="590" y="339" class="tiny dim">
+  ROLE
+</text>
+
+<text x="590" y="362" class="label value">
+  DEVELOPER
+</text>
+
+<!-- stack -->
+
+<text x="590" y="396" class="tiny dim">
+  STACK
+</text>
+
+<text x="590" y="419" class="label value">
+  PYTHON // JS // WEB
+</text>
+
+<!-- status -->
+
+<text x="590" y="453" class="tiny dim">
+  CURRENT_STATUS
+</text>
+
+<text x="590" y="476" class="label green">
+  BUILDING...
+</text>
+
+<!-- access -->
+
+<rect
+  x="590"
+  y="502"
+  width="340"
+  height="42"
+  rx="5"
+  fill="#06130d"
+  stroke="#1d633d"/>
+
+<text
+  x="610"
+  y="528"
+  class="label green">
+
+  [ ACCESS_GRANTED ]
+
+</text>
+
+<!-- ================================================= -->
+<!-- CYBER DETAILS -->
+<!-- ================================================= -->
+
+<text
+  x="590"
+  y="562"
+  class="tiny dim">
+
+  NODE_07 // AUTH_0xA3 // SECURE_CHANNEL
+
+</text>
+
+<!-- bottom system bar -->
+
+<line
+  x1="50"
+  y1="590"
+  x2="950"
+  y2="590"
+  stroke="#17303a"/>
 
 <circle
-  cx="160"
-  cy="540"
-  r="2"
+  cx="65"
+  cy="590"
+  r="3"
   fill="#39ff88"/>
+
+<text
+  x="80"
+  y="595"
+  class="tiny green">
+
+  CONNECTION_SECURE
+
+</text>
+
+<text
+  x="350"
+  y="595"
+  class="tiny dim">
+
+  // ENCRYPTED // NO_TRACE //
+
+</text>
+
+<text
+  x="790"
+  y="595"
+  class="tiny cyan">
+
+  0xAEXORR
+
+</text>
+
+<!-- tiny cyber marks -->
+
+<g
+  class="tiny"
+  opacity=".45">
+
+  <text x="900" y="105" class="red">01</text>
+  <text x="918" y="120" class="cyan">10</text>
+  <text x="900" y="135" class="dim">01</text>
+  <text x="918" y="150" class="green">11</text>
+
+</g>
 
 </svg>
 '''
