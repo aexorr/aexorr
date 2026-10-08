@@ -9,7 +9,7 @@
 <br/>
 
 <div align="center">
-<img src="./system-check.svg" width="100%" alt="Aexorr System Diagnostics">
+<img src="./hacker-console.svg" width="100%" alt="Aexorr hacker terminal">
 </div>
 
 <br/>
