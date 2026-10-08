@@ -1,0 +1,201 @@
+<svg width="1000" height="300" viewBox="0 0 1000 300" xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#070b10"/>
+    <stop offset="100%" stop-color="#0b1118"/>
+  </linearGradient>
+
+  <linearGradient id="cyan">
+    <stop offset="0%" stop-color="#00f0ff"/>
+    <stop offset="100%" stop-color="#00a8ff"/>
+  </linearGradient>
+
+  <pattern id="scan" width="4" height="8" patternUnits="userSpaceOnUse">
+    <rect width="4" height="1" fill="#ffffff" opacity="0.025"/>
+  </pattern>
+
+  <filter id="glow">
+    <feGaussianBlur stdDeviation="2.5" result="blur"/>
+    <feMerge>
+      <feMergeNode in="blur"/>
+      <feMergeNode in="SourceGraphic"/>
+    </feMerge>
+  </filter>
+</defs>
+
+<!-- BACKGROUND -->
+<rect width="1000" height="300" rx="18" fill="url(#bg)"/>
+<rect width="1000" height="300" rx="18" fill="url(#scan)"/>
+
+<!-- BORDER -->
+<rect x="1.5" y="1.5" width="997" height="297"
+      rx="18"
+      fill="none"
+      stroke="#17303a"
+      stroke-width="2"/>
+
+<!-- HEADER -->
+<rect x="0" y="0" width="1000" height="48" rx="18" fill="#0d151d"/>
+<rect x="0" y="30" width="1000" height="18" fill="#0d151d"/>
+
+<circle cx="25" cy="24" r="6" fill="#ff4057"/>
+<circle cx="45" cy="24" r="6" fill="#ffbd2e"/>
+<circle cx="65" cy="24" r="6" fill="#28c840"/>
+
+<text x="92" y="29"
+      fill="#718691"
+      font-family="monospace"
+      font-size="14">
+  IDENTITY_PROTOCOL // AEXORR
+</text>
+
+<text x="875" y="29"
+      fill="#00eaff"
+      font-family="monospace"
+      font-size="12">
+  NODE_07
+</text>
+
+<!-- LEFT -->
+<text x="45" y="92"
+      fill="#00f0ff"
+      font-family="monospace"
+      font-size="15"
+      filter="url(#glow)">
+  aexorr@github:~$ whoami
+</text>
+
+<text x="45" y="135"
+      fill="#ffffff"
+      font-family="monospace"
+      font-size="30">
+  AEXORR
+</text>
+
+<text x="45" y="163"
+      fill="#00ff9c"
+      font-family="monospace"
+      font-size="13">
+  DEVELOPER // BUILDER // EXPERIMENTER
+</text>
+
+<line x1="45" y1="185" x2="540" y2="185"
+      stroke="#17303a"/>
+
+<text x="45" y="215"
+      fill="#718691"
+      font-family="monospace"
+      font-size="13">
+  FOCUS
+</text>
+
+<text x="150" y="215"
+      fill="#ffffff"
+      font-family="monospace"
+      font-size="13">
+  WEB • AI • AUTOMATION
+</text>
+
+<text x="45" y="245"
+      fill="#718691"
+      font-family="monospace"
+      font-size="13">
+  MODE
+</text>
+
+<text x="150" y="245"
+      fill="#ff7b35"
+      font-family="monospace"
+      font-size="13">
+  BUILD / EXPERIMENT
+</text>
+
+<!-- RIGHT STATUS -->
+<rect x="600" y="78" width="350" height="155"
+      rx="10"
+      fill="#080d13"
+      stroke="#15313b"/>
+
+<text x="625" y="108"
+      fill="#ff4057"
+      font-family="monospace"
+      font-size="12">
+  SYSTEM_ID
+</text>
+
+<text x="625" y="140"
+      fill="#718691"
+      font-family="monospace"
+      font-size="12">
+  STATUS
+</text>
+
+<text x="800" y="140"
+      fill="#00ff9c"
+      font-family="monospace"
+      font-size="12">
+  ONLINE
+</text>
+
+<text x="625" y="168"
+      fill="#718691"
+      font-family="monospace"
+      font-size="12">
+  ACCESS
+</text>
+
+<text x="800" y="168"
+      fill="#00ff9c"
+      font-family="monospace"
+      font-size="12">
+  GRANTED
+</text>
+
+<text x="625" y="196"
+      fill="#718691"
+      font-family="monospace"
+      font-size="12">
+  CHANNEL
+</text>
+
+<text x="800" y="196"
+      fill="#00eaff"
+      font-family="monospace"
+      font-size="12">
+  SECURE
+</text>
+
+<text x="625" y="224"
+      fill="#718691"
+      font-family="monospace"
+      font-size="12">
+  AUTH
+</text>
+
+<text x="800" y="224"
+      fill="#00ff9c"
+      font-family="monospace"
+      font-size="12">
+  VERIFIED
+</text>
+
+<!-- FOOTER -->
+<line x1="45" y1="268" x2="955" y2="268"
+      stroke="#17303a"/>
+
+<text x="45" y="286"
+      fill="#4c626d"
+      font-family="monospace"
+      font-size="11">
+  // DIGITAL_IDENTITY
+</text>
+
+<text x="820" y="286"
+      fill="#00eaff"
+      font-family="monospace"
+      font-size="11">
+  0xAEXORR
+</text>
+
+</svg>
