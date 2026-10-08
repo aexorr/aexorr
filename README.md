@@ -28,9 +28,13 @@
 │                    [ ACCESS GRANTED ]                               │
 │                                                                      │
 └──────────────────────────────────────────────────────────────────────┘
+```
+
 <div align="center">
   <img src="./identity-card.svg" width="100%" alt="Aexorr Identity Protocol">
 </div>
+
+```text
 ╭──────────────────────────────────────────────────────────────────────╮
 │                                                                      │
 │  USER        :: aexorr                                                │
