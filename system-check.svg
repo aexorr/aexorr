@@ -1,0 +1,239 @@
+<svg width="1000" height="460" viewBox="0 0 1000 460" xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#070b10"/>
+    <stop offset="55%" stop-color="#0b1118"/>
+    <stop offset="100%" stop-color="#05080c"/>
+  </linearGradient>
+
+  <linearGradient id="cyanLine">
+    <stop offset="0%" stop-color="#00f0ff"/>
+    <stop offset="100%" stop-color="#00a8ff"/>
+  </linearGradient>
+
+  <filter id="glow">
+    <feGaussianBlur stdDeviation="3" result="blur"/>
+    <feMerge>
+      <feMergeNode in="blur"/>
+      <feMergeNode in="SourceGraphic"/>
+    </feMerge>
+  </filter>
+
+  <pattern id="scanlines" width="4" height="8" patternUnits="userSpaceOnUse">
+    <rect width="4" height="1" fill="#ffffff" opacity="0.025"/>
+  </pattern>
+</defs>
+
+<!-- BACKGROUND -->
+<rect width="1000" height="460" rx="18" fill="url(#bg)"/>
+<rect width="1000" height="460" rx="18" fill="url(#scanlines)"/>
+
+<!-- OUTER BORDER -->
+<rect x="1.5" y="1.5" width="997" height="457" rx="18"
+      fill="none" stroke="#17303a" stroke-width="2"/>
+
+<!-- TERMINAL HEADER -->
+<rect x="0" y="0" width="1000" height="48" rx="18" fill="#0d151d"/>
+<rect x="0" y="30" width="1000" height="18" fill="#0d151d"/>
+
+<circle cx="25" cy="24" r="6" fill="#ff4057"/>
+<circle cx="45" cy="24" r="6" fill="#ffbd2e"/>
+<circle cx="65" cy="24" r="6" fill="#28c840"/>
+
+<text x="92" y="29"
+      fill="#6e8490"
+      font-family="monospace"
+      font-size="15">
+  AEXORR_TERMINAL // SYSTEM_DIAGNOSTICS
+</text>
+
+<text x="900" y="29"
+      fill="#00eaff"
+      font-family="monospace"
+      font-size="13">
+  NODE_07
+</text>
+
+<!-- COMMAND -->
+<text x="42" y="88"
+      fill="#00f0ff"
+      font-family="monospace"
+      font-size="16"
+      filter="url(#glow)">
+  aexorr@github:~$ ./system_check.sh
+</text>
+
+<text x="42" y="116"
+      fill="#5d737e"
+      font-family="monospace"
+      font-size="13">
+  // initializing secure diagnostics...
+</text>
+
+<!-- LEFT STATUS PANEL -->
+<rect x="35" y="140" width="570" height="245"
+      rx="10"
+      fill="#080d13"
+      stroke="#15313b"/>
+
+<text x="55" y="168"
+      fill="#00ff9c"
+      font-family="monospace"
+      font-size="14">
+  SYSTEM_STATUS
+</text>
+
+<text x="55" y="200" fill="#728792" font-family="monospace" font-size="14">IDENTITY</text>
+<text x="210" y="200" fill="#ffffff" font-family="monospace" font-size="14">AEXORR</text>
+<text x="480" y="200" fill="#00ff9c" font-family="monospace" font-size="13">[ VERIFIED ]</text>
+
+<text x="55" y="228" fill="#728792" font-family="monospace" font-size="14">SYSTEM</text>
+<text x="210" y="228" fill="#ffffff" font-family="monospace" font-size="14">ONLINE</text>
+<text x="480" y="228" fill="#00ff9c" font-family="monospace" font-size="13">[ OK ]</text>
+
+<text x="55" y="256" fill="#728792" font-family="monospace" font-size="14">ACCESS</text>
+<text x="210" y="256" fill="#ffffff" font-family="monospace" font-size="14">GRANTED</text>
+<text x="480" y="256" fill="#00ff9c" font-family="monospace" font-size="13">[ SECURE ]</text>
+
+<text x="55" y="284" fill="#728792" font-family="monospace" font-size="14">CONNECTION</text>
+<text x="210" y="284" fill="#ffffff" font-family="monospace" font-size="14">ENCRYPTED</text>
+<text x="480" y="284" fill="#00eaff" font-family="monospace" font-size="13">AES-256</text>
+
+<text x="55" y="320"
+      fill="#728792"
+      font-family="monospace"
+      font-size="13">
+  SYSTEM INTEGRITY
+</text>
+
+<!-- PROGRESS BAR -->
+<rect x="55" y="335" width="390" height="12" rx="3" fill="#101b21"/>
+
+<rect x="55" y="335" width="370" height="12" rx="3"
+      fill="url(#cyanLine)"
+      filter="url(#glow)"/>
+
+<text x="460" y="346"
+      fill="#00f0ff"
+      font-family="monospace"
+      font-size="14">
+  98%
+</text>
+
+<text x="55" y="370"
+      fill="#00ff9c"
+      font-family="monospace"
+      font-size="12">
+  [✓] ALL SYSTEMS OPERATIONAL
+</text>
+
+<!-- RIGHT HUD -->
+<rect x="625" y="140" width="340" height="245"
+      rx="10"
+      fill="#080d13"
+      stroke="#15313b"/>
+
+<text x="648" y="168"
+      fill="#ff4057"
+      font-family="monospace"
+      font-size="13">
+  SECURITY_LAYER
+</text>
+
+<text x="648" y="200"
+      fill="#728792"
+      font-family="monospace"
+      font-size="13">
+  THREAT_LEVEL
+</text>
+
+<text x="840" y="200"
+      fill="#00ff9c"
+      font-family="monospace"
+      font-size="13">
+  LOW
+</text>
+
+<text x="648" y="228"
+      fill="#728792"
+      font-family="monospace"
+      font-size="13">
+  AUTH
+</text>
+
+<text x="840" y="228"
+      fill="#00ff9c"
+      font-family="monospace"
+      font-size="13">
+  VERIFIED
+</text>
+
+<text x="648" y="256"
+      fill="#728792"
+      font-family="monospace"
+      font-size="13">
+  CHANNEL
+</text>
+
+<text x="840" y="256"
+      fill="#00eaff"
+      font-family="monospace"
+      font-size="13">
+  SECURE
+</text>
+
+<text x="648" y="284"
+      fill="#728792"
+      font-family="monospace"
+      font-size="13">
+  UPTIME
+</text>
+
+<text x="840" y="284"
+      fill="#ffffff"
+      font-family="monospace"
+      font-size="13">
+  99.8%
+</text>
+
+<text x="648" y="320"
+      fill="#728792"
+      font-family="monospace"
+      font-size="13">
+  TRACE
+</text>
+
+<text x="840" y="320"
+      fill="#00ff9c"
+      font-family="monospace"
+      font-size="13">
+  DISABLED
+</text>
+
+<text x="648" y="350"
+      fill="#ff4057"
+      font-family="monospace"
+      font-size="12">
+  // ENCRYPTED_CHANNEL
+</text>
+
+<!-- FOOTER -->
+<line x1="35" y1="410" x2="965" y2="410"
+      stroke="#17303a"/>
+
+<text x="42" y="435"
+      fill="#4c626d"
+      font-family="monospace"
+      font-size="12">
+  [ SYSTEM_READY ] // [ ACCESS_GRANTED ] // [ NO_TRACE ]
+</text>
+
+<text x="790" y="435"
+      fill="#00eaff"
+      font-family="monospace"
+      font-size="12">
+  0xAEXORR
+</text>
+
+</svg>
