@@ -35,11 +35,3 @@
 </div>
 
 ```text
-
-**`aexorr@github:~$ _`**
-
-<br/>
-
-<img src="https://komarev.com/ghpvc/?username=aexorr&style=for-the-badge&color=111111&label=PROFILE+VIEWS" />
-
-</div>
